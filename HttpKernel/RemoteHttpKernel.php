@@ -171,13 +171,22 @@ class RemoteHttpKernel implements HttpKernelInterface
 
     /**
      * Convert a HeaderBag into an array of headers appropriate for cURL
-     *
+     * lrusev: Overrided in order to 
+     * 
      * @param HeaderBag $headerBag headers to parse
      *
      * @return array An array of header strings
      */
     private function buildHeadersArray(HeaderBag $headerBag) {
-        return explode("\r\n",$headerBag);
+        $headers = [];
+        foreach ($headerBag->all() as $name => $values) {
+            $name = implode('-', array_map('ucfirst', explode('-', $name)));
+            foreach ($values as $value) {
+                $headers[] = $name.': '.$value;
+            }
+        }
+
+        return $headers;
     }
 
     public function getLastCurlRequest() {
